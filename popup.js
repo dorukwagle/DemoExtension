@@ -1,5 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
-    let tableTemplate = ```
+document.addEventListener("DOMContentLoaded",  function() {
+    let tableTemplate = `
                 <h2>Websites Credentials</h2>
                 <table>
                     <tr>
@@ -15,9 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td></td>
                     </tr>
                 </table>
-            ```;
+            `;
     
-    setTimeout(() => document.write("timeout"), 5000);
     const passwordInput = document.getElementById("test-password");
     const passwordButton = document.getElementById("test-button");
     const dummyDisplay = document.getElementById("display");
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     passwordButton.addEventListener("click", (e) => {
         const password = passwordInput.value;
-        alert("bittom clicked");
         dummyDisplay.innerText = "Hark!, Good Password: " + password;
     });
 });
