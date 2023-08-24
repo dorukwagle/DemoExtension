@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Demo Extension</title>
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            td,
+            th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #dddddd;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Hello Doruk</h1>
+        <center>
+            <div>
+                <input type="password" id="test-password" />
+                <button id="test-button">Test Button</button>
+            </div>
+        </center>
+        <br>
+        <h4 id="display"></h4>
+        <div id="credentials-container"></div>
+        <div><button id="done-btn" style="display: none;">Done and Hide</button></div>
+    </body>
+    <script>
+        let tableTemplate = ```
+            <h2>Websites Credentials</h2>
+            <table>
+                <tr>
+                    <th>Website</th>
+                    <th>Email/username</th>
+                    <th>Password</th>
+                    <th>DateTime</th>
+                </tr>
+                <tr>
+                    <td>Alfreds Futterkiste</td>
+                    <td>Maria Anders</td>
+                    <td>Germany</td>
+                    <td></td>
+                </tr>
+            </table>
+        ```;
+        
+    </script>
+</html>
