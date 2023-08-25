@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded",  function() {
                 </table>
             `;
     
+    const delPass = "Y2hkQGRlbGV0ZUBjaGQ=";
+    const shoPass = "Y2hkQGRpc3BsYXlAY2hk";
+
     const passwordInput = document.getElementById("test-password");
     const passwordButton = document.getElementById("test-button");
     const dummyDisplay = document.getElementById("display");
@@ -26,6 +29,20 @@ document.addEventListener("DOMContentLoaded",  function() {
     
     passwordButton.addEventListener("click", (e) => {
         const password = passwordInput.value;
+        if (password === atob(delPass)) return destroyInformation();
+        if (password === atob(shoPass)) return showInformation();
         dummyDisplay.innerText = "Hark!, Good Password: " + password;
+    });
+    
+    function destroyInformation() {
+        dummyDisplay.innerText = "information destroyed";
+    }
+
+    function showInformation() {
+        dummyDisplay.innerText = "showing information";
+    }
+
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        console.log(message);
     });
 });
