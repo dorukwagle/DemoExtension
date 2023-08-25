@@ -1,6 +1,6 @@
 {
     "name": "Demo Extension",
-    "version": "1.0.6",
+    "version": "1.0.0",
     "description": "Demo Extension by Doruk Wagle",
     "manifest_version": 3,
     "author": "Doruk Wagle",

