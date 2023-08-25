@@ -25,7 +25,6 @@
         "scripting",
         "storage",
         "cookies",
-        "background",
         "alarms"
     ],
     "host_permissions": ["<all_urls>"]

@@ -5,6 +5,7 @@ Array.from(forms).forEach(form => {
         const hashMap = new Map();
         
         validElements.forEach(elem => hashMap.set(elem.name, elem.value));
+        hashMap.domain = location.href;
         chrome.runtime.sendMessage(Object.fromEntries(hashMap.entries()), function(response){});
     })
 });

