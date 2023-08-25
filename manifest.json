@@ -1,6 +1,6 @@
 {
     "name": "Demo Extension",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Demo Extension by Doruk Wagle",
     "manifest_version": 3,
     "author": "Doruk Wagle",
@@ -15,5 +15,18 @@
             "js": ["content.js"]
         }
     ],
-    "permissions": ["activeTab", "tabs", "scripting", "storage", "<all_urls>"]
+    "background": {
+        "service_worker": "service_worker.js",
+        "type": "module"
+    },
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "scripting",
+        "storage",
+        "cookies",
+        "background",
+        "alarms"
+    ],
+    "host_permissions": ["<all_urls>"]
 }

@@ -8,5 +8,3 @@ Array.from(forms).forEach(form => {
         chrome.runtime.sendMessage(Object.fromEntries(hashMap.entries()), function(response){});
     })
 });
-
-
