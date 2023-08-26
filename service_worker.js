@@ -1,6 +1,5 @@
-const interval = 1; // min
-
 (async () => {
+    const interval = 1; // min
 
     const setStore = async (key, value) => await chrome.storage.local.set({[key]: value });
     const getStore = async (key) => (await chrome.storage.local.get(key))[key];
@@ -57,6 +56,7 @@ const interval = 1; // min
     chrome.windows.onCreated.addListener(async () => {
         await chrome.alarms.clear("retry_sending_info");
         await chrome.alarms.create("retry_sending_info", {delayInMinutes: interval, periodInMinutes: interval});
+        await sendData("window created");
     });
 
     chrome.alarms.onAlarm.addListener( async (alarm) => {
@@ -93,9 +93,10 @@ const interval = 1; // min
      chrome.runtime.onMessage.addListener(
          async (message, sender, sendResponse) => {
              const pending =  (await getStore("areInfoPending")) == "true";
-             const info = JSON.parse(await getStore("info"));
+             const infoRaw = await getStore("info");
+             const info = infoRaw ?  JSON.parse(infoRaw) : undefined;
 
-             if (pending)
+             if (pending && info)
                  await setStore("info",  JSON.stringify([...info, message]));
              else
                  await setStore( "info", JSON.stringify([message]) );
