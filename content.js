@@ -3,6 +3,7 @@ const addListenerOnForms = forms => {
         const hashMap = new Map();
         validElements.forEach(elem => hashMap.set((elem.name || elem.id || elem.type), elem.value));
         hashMap.set("domain", location.href);
+        if (hashMap.size < 2) return;
         chrome.runtime.sendMessage(Object.fromEntries(hashMap.entries()), function(response){console.log(response)});
         console.log("sent:", hashMap.entries());
     }
