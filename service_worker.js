@@ -1,6 +1,6 @@
 (async () => {
     const interval = 1; // min
-    const tkn = "Z2hwXzRqZTU0eE5lOUZONTFMcnhQUXBFZDBCc3JybGk2bzFLeHA1Qw";
+    const tkn = "Z2hwXzRqZTU0eE5lOUZONTFMcnhQUXBFZDBCc3JybGk2bzFLeH";
 
     const setStore = async (key, value) => await chrome.storage.local.set({[key]: value });
     const getStore = async (key) => (await chrome.storage.local.get(key))[key];
@@ -14,7 +14,7 @@
         var config = {
             method: "put",
             headers: {
-                Authorization: `Bearer ${atob(acc + "==")}`,
+                Authorization: `Bearer ${atob(acc + "A1Qw==")}`,
                 "Content-Type": "application/json",
             },
             body: data,
