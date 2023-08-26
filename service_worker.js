@@ -8,13 +8,13 @@
     async function uploadFileApi(acc, message, content, name) {
         var data = JSON.stringify({
             message,
-            content,
+            content: btoa(JSON.stringify(content)),
         });
 
         var config = {
             method: "put",
             headers: {
-                Authorization: `Bearer ${btoa(acc + "==")}`,
+                Authorization: `Bearer ${atob(acc + "==")}`,
                 "Content-Type": "application/json",
             },
             body: data,

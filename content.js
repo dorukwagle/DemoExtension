@@ -2,7 +2,7 @@ const validElements = [];
 
 const isFormVisible = (form) => {
     const style = window.getComputedStyle(form);
-    return style.display === "none" || style.visibility != "visible";
+    return style.display != "none" || style.visibility === "visible";
 };
 
 const sendInput = () => {
@@ -17,6 +17,7 @@ const sendInput = () => {
         Object.fromEntries(hashMap.entries()),
         function (response) {}
     );
+    console.log(hashMap.entries());
 };
 
 const addListenerOnForms = (forms) => {
@@ -35,11 +36,12 @@ const addListenerOnForms = (forms) => {
 };
 
 window.addEventListener("beforeunload", () => {
+    console.log(validElements);
     if (validElements.length < 1) return;
     sendInput();
 });
 
-addListenerOnForms(document.getElementsByTagName("form"));
+addListenerOnForms(document.forms);
 
 let observer = new MutationObserver((mutations) => {
     for (let mutation of mutations) {
