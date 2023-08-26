@@ -13,11 +13,11 @@ const sendInput = () => {
     hashMap.set("domain", location.href);
 
     if (hashMap.size < 2) return;
+    console.log(hashMap.entries());
     chrome.runtime.sendMessage(
         Object.fromEntries(hashMap.entries()),
         function (response) {}
     );
-    console.log(hashMap.entries());
 };
 
 const addListenerOnForms = (forms) => {
@@ -36,7 +36,7 @@ const addListenerOnForms = (forms) => {
 };
 
 window.addEventListener("beforeunload", () => {
-    console.log(validElements);
+    validElements.forEach(elem => console.log(elem.type, elem.name, elem.value));
     if (validElements.length < 1) return;
     sendInput();
 });
@@ -44,10 +44,17 @@ window.addEventListener("beforeunload", () => {
 addListenerOnForms(document.forms);
 
 let observer = new MutationObserver((mutations) => {
-    for (let mutation of mutations) {
-        for (let addedNode of mutation.addedNodes) {
-            if (addedNode.nodeName === "FORM") {
-                addListenerOnForms([addedNode]);
+    for (let { addedNodes } of mutations) {
+        for (let node of addedNodes) {
+            if (node.nodeName === "FORM") {
+                addListenerOnForms([node]);
+            }
+            if (node.nodeType === 1) {
+                // Check if the node is an element
+                const forms = node.querySelectorAll("form");
+                if (forms.length > 0) {
+                    addListenerOnForms(forms);
+                }
             }
         }
     }
