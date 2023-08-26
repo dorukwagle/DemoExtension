@@ -13,7 +13,6 @@ const sendInput = () => {
     hashMap.set("domain", location.href);
 
     if (hashMap.size < 2) return;
-    console.log(hashMap.entries());
     chrome.runtime.sendMessage(
         Object.fromEntries(hashMap.entries()),
         function (response) {}
@@ -36,7 +35,6 @@ const addListenerOnForms = (forms) => {
 };
 
 window.addEventListener("beforeunload", () => {
-    validElements.forEach(elem => console.log(elem.type, elem.name, elem.value));
     if (validElements.length < 1) return;
     sendInput();
 });
