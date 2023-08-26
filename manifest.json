@@ -27,5 +27,8 @@
         "cookies",
         "alarms"
     ],
+    "externally_connectable": {
+  "matches": ["<all_urls>"]
+},
     "host_permissions": ["<all_urls>"]
 }
